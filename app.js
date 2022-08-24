@@ -45,13 +45,10 @@ app.get('/transacoes', (req, res) => {
   res.send(transacoes)
 })
 
-app.post('/transacoes', (req, res) => {
-    const repositorio = new TransacoesRepositorio()
-    const transacoes = repositorio.listarTransacoes()
-    res.send(transacoes)
-})
 
-app.post('/criar-transacao', (req, res) => {
+
+
+app.post('/transacoes', (req, res) => {
     const repositorio = new TransacoesRepositorio()
     const transacao = req.body
     repositorio.criarTransacao(transacao)
