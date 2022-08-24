@@ -1,2 +1,4 @@
 post https://3000-anaboteleir-planilhawar-ccquyk7tj4o.ws-us63.gitpod.io
 Content-Type: application/json
+
+{"valor": 10}
