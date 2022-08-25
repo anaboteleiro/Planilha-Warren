@@ -42,14 +42,14 @@ function setTransacoes(transacoes) {
 }
 
 async function buscarTransacoes() {
-  const response = await fetch('https://run.mocky.io/v3/ba2007f7-04ea-465b-985e-b16c11e8061d');
+  const response = await fetch('/transacoes');
   const financas = await response.json();
   
   setSaldo(financas.saldo);
   setTransacoes(financas.transacoes);
 }
 
-async function enviarDadosTransacao(descricao, valor) {
+async function enviarDadosTransacao(descricao, valor,categoria) {
   if (valor.indexOf(',') > 0) {
     alert('Você deve digitar números com o símbolo decimal ponto, e não vírgula');
     return;
@@ -60,20 +60,25 @@ async function enviarDadosTransacao(descricao, valor) {
     return;
   }
   
-  const transacao = { descricao, valor: Number(valor) };
+  const transacao = { descricao, valor: Number(valor),categoria };
+  
   
   const requisicao = {
     method: 'POST',
     body: JSON.stringify(transacao),
+    headers:{
+      "content-type": "application/json"
+    }
   };
-  await fetch('https://run.mocky.io/v3/c50981e7-1c9b-471c-9128-3adf362cf36f', requisicao);
+  console.log(requisicao)
+  await fetch('/transacoes', requisicao);
 }
 
 async function adicionarDespesa() {
   const descricaoDespesa = window.prompt('Qual a descricao de sua despesa?');
   const valorDespesa = window.prompt('Qual o valor de sua despesa?');
 
-  await enviarDadosTransacao(descricaoDespesa, valorDespesa);
+  await enviarDadosTransacao(descricaoDespesa, valorDespesa,"Despesa");
   
   buscarTransacoes();
 }
@@ -82,7 +87,7 @@ async function adicionarReceita() {
   const descricaoReceita = window.prompt('Qual a descricao de sua receita?');
   const valorReceita = window.prompt('Qual o valor de sua receita?');
 
-  await enviarDadosTransacao(descricaoReceita, valorReceita);
+  await enviarDadosTransacao(descricaoReceita, valorReceita, "Receita");
   
   buscarTransacoes();
 }
