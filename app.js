@@ -1,75 +1,46 @@
-// const http = require('http');
-
-// const port = 3000;
-
-// const server = http.createServer((req, res) => {
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type', 'text/plain');
-//   res.end('Ola mundo');
-// });
-
-// server.listen(port, () => {
-//   console.log(`Servidor ouvindo na porta ${port}`);
-// });
-
-
-
-// const http = require('http');
-
-// const port = 3000;
-
-// const server = http.createServer((req, res) => {
-//     const html = `
-//         <h1>Ola mundo!</h1>
-//         <p>Criamos um servidor simples!</p>
-//     `;
-//     res.statusCode = 200;
-//     res.setHeader("Content-Type", "text/html");
-//     res.write(html);
-//     res.end();
-// });
-
-// aqui começa
-
+require('dotenv/config')
 const express = require('express')
 
-const TransacoesRepositorio = require("./transacoes-repositorio")
+const TransacoesRepositorio = require("./infra/sql-transacoes-repositorio")
 
 const app = express()
+
 const port = 3000
+
+function mostraReq(req) {
+    console.log(`${req.method} ${req.url} ${JSON.stringify(req.body)}`)
+}
+
+// Permite acessar o req.body
 app.use(express.json());
+// "Serve" arquivos da pasta public
 app.use(express.static(`${__dirname}/public`))
 
-app.get('/transacoes', (req, res) => {
-  const repositorio = new TransacoesRepositorio()
-  const transacoes = repositorio.listarTransacoes()
-{
-  transacoes:[
-    {'valor':10,"descricao": "bolo", categoria: "dispesa"}
-  ]
-}
-let saldo= 0
-transacoes.transacoes.forEach((transacao)=>{
-  if(transacao.categoria==="Despesa"){
-    saldo=saldo-transacao.valor
-  }
-  if(transacao.categoria==="Receita"){
-    saldo=saldo+transacao.valor
-  }
+app.get('/transacoes', async (req, res) => {
+    mostraReq(req)
+    const repositorio = new TransacoesRepositorio()
+    const transacoes = await repositorio.listarTransacoes()
+
+    let saldo = 0
+    transacoes.transacoes.forEach((transacao) => {
+        if (transacao.categoria === "Despesa") {
+            saldo = saldo - transacao.valor
+        }
+        if (transacao.categoria === "Receita") {
+            saldo = saldo + transacao.valor
+        }
+    })
+
+    transacoes.saldo = saldo
+
+    res.send(transacoes)
 })
 
-  transacoes.saldo=saldo
-  res.send(transacoes)
-})
-
-
-
-
-
-app.post('/transacoes', (req, res) => {
+app.post('/transacoes', async (req, res) => {
+    mostraReq(req)
     const repositorio = new TransacoesRepositorio()
     const transacao = req.body
-    repositorio.criarTransacao(transacao)
+    await repositorio.criarTransacao(transacao)
     res.status(201).send(transacao)
 })
 
