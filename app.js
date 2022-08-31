@@ -1,7 +1,7 @@
 require('dotenv/config')
 const express = require('express')
 
-const TransacoesRepositorio = require("./infra/sql-transacoes-repositorio")
+const SqlTransacoesRepositorio = require("./infra/SqlTransacoesRepositorio")
 
 const app = express()
 
@@ -18,7 +18,7 @@ app.use(express.static(`${__dirname}/public`))
 
 app.get('/transacoes', async (req, res) => {
     mostraReq(req)
-    const repositorio = new TransacoesRepositorio()
+    const repositorio = new SqlTransacoesRepositorio()
     const transacoes = await repositorio.listarTransacoes()
 
     let saldo = 0
@@ -38,7 +38,7 @@ app.get('/transacoes', async (req, res) => {
 
 app.post('/transacoes', async (req, res) => {
     mostraReq(req)
-    const repositorio = new TransacoesRepositorio()
+    const repositorio = new SqlTransacoesRepositorio()
     const transacao = req.body
     await repositorio.criarTransacao(transacao)
     res.status(201).send(transacao)
